@@ -26,12 +26,10 @@ services:
       *non-blocking-logging
 
   rest-server:
-    image: codalab/bundleserver:${CODALAB_VERSION}
+    image: codalab/server:${CODALAB_VERSION}
     command: server
     environment:
       *codalab-env
-    volumes:
-      - ./files/wait-for-it.sh:/data/bin/wait-for-it.sh
     depends_on:
       - mysql
     networks:
@@ -40,12 +38,10 @@ services:
       *non-blocking-logging
 
   bundle-manager:
-    image: codalab/bundleserver:${CODALAB_VERSION}
+    image: codalab/server:${CODALAB_VERSION}
     command: bundle-manager
     environment:
       *codalab-env
-    volumes:
-      - ./files/wait-for-it.sh:/data/bin/wait-for-it.sh
     depends_on:
       - rest-server
     networks:
@@ -64,12 +60,12 @@ services:
 
   nginx:
     image: nginx:1.12.0
-    command: /data/bin/wait-for-it.sh rest-server:2900 -- nginx
+    command: /opt/wait-for-it.sh rest-server:2900 -- nginx
     ports:
       - ${CODALAB_HTTP_PORT}:80
     volumes:
       - ./files/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./files/wait-for-it.sh:/data/bin/wait-for-it.sh
+      - ./files/wait-for-it.sh:/opt/wait-for-it.sh
     depends_on:
       - frontend
     networks:
@@ -90,7 +86,7 @@ services:
       *non-blocking-logging
 
   tests:
-    image: codalab/bundleserver:${CODALAB_VERSION}
+    image: codalab/server:${CODALAB_VERSION}
     working_dir: /opt/codalab-worksheets/
     entrypoint: ./venv/bin/python ./test-cli.py
     command: all --instance http://rest-server:2900
