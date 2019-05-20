@@ -270,7 +270,7 @@ def temp_instance():
                     '--worker-docker-network-name %s-worker-net' % temp_instance_name
                 ]
             ),
-            shell=True
+            shell=True,
         )
     except subprocess.CalledProcessError as ex:
         print("Temp instance exception: %s" % ex.output)
@@ -288,14 +288,8 @@ def temp_instance():
     )
 
     subprocess.check_call(
-        ' '.join(
-            [
-                './codalab_service.py',
-                'down',
-                '--instance-name temp-%s' % temp_instance_name,
-            ]
-        ),
-        shell=True
+        ' '.join(['./codalab_service.py', 'down', '--instance-name temp-%s' % temp_instance_name]),
+        shell=True,
     )
 
     run_command([cl, 'work', original_worksheet])
